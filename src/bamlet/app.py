@@ -24,23 +24,31 @@ class Bamlet:
 
     # --- public methods
     def run(self, host, port):
-        self.host = host
-        self.port = port
-        print(f" * Serving {cF.BLUE}bamlet{cS.RESET_ALL} app")
-        asyncio.run(self._inner_run())
+        asyncio.run(self._inner_run(host,port))
+
+
+    async def run_async(self, host, port):
+        await self._inner_run(host,port)
     # ----
 
     # --- private methods
-    async def _inner_run(self):
+    async def _inner_run(self,host,port):
+        print(f" * Serving {cF.BLUE}bamlet{cS.RESET_ALL} app")
+        self.host = host
+        self.port = port
 
         # assign shutdown task to shutdown signals
         loop = asyncio.get_event_loop()
-        for signal_type in [signal.SIGINT, signal.SIGTERM]:
+        for signal_type in self.get_shutdown_signal_types():
             loop.add_signal_handler(signal_type, lambda: asyncio.create_task(self._shutdown()))
 
         # start server and keep running till it is done
         task_server = asyncio.create_task(self._run_server())
         await task_server
+
+
+    def get_shutdown_signal_types(self):
+        return [signal.SIGINT, signal.SIGTERM]
 
 
     async def _run_server(self):
