@@ -7,4 +7,4 @@ jobs:
           - name: LS
             run: ls
           - name: install requirements
-            run: pip -r install requirements.txt
+            run: pip install -r requirements.txt
