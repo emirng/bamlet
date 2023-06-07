@@ -6,5 +6,7 @@ jobs:
         steps:
           - name: LS
             run: ls
+          - name: PWD
+            run: pwd
           - name: install requirements
             run: pip install -r requirements.txt
