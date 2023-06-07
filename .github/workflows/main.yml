@@ -6,3 +6,5 @@ jobs:
         steps:
           - name: LS
             run: ls
+          - name: install requirements
+            run: pip -r install requirements.txt
