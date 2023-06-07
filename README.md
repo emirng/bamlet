@@ -26,3 +26,31 @@ To run an example execute this command in to project's top folder
 ```
 python3 -m examples.example_001_on_message
 ```
+
+
+
+## API
+
+| Class | Description |
+|----------|-------------|
+| `Bamlet` | The server. |
+| `Client` | A client that is connected (or disconnected) to the server. |
+| `MessageQueue` | A helper that helps retrive "messages" from a client. |
+
+### Bamlet
+
+| Method | Arguments | Description |
+|----------|-------------|---|
+| `run` | host, port | Will start the server.  |
+| `run_async` | host, port | Will start the server asynchronously  |
+
+### Client
+
+| Method | Arguments | Description |
+|----------|-------------|---|
+| `send` | text | Sends a message to the client  |
+
+#### MessageQueue
+
+Does not have any method but if used as an iterable it will yield messages complete messages in the queue
+
