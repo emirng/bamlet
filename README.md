@@ -50,7 +50,7 @@ python3 -m examples.example_001_on_message
 |----------|-------------|---|
 | `send` | text | Sends a message to the client  |
 
-#### MessageQueue
+### MessageQueue
 
 Does not have any method but if used as an iterable it will yield complete messages in the queue
 
