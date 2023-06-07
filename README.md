@@ -52,5 +52,5 @@ python3 -m examples.example_001_on_message
 
 #### MessageQueue
 
-Does not have any method but if used as an iterable it will yield messages complete messages in the queue
+Does not have any method but if used as an iterable it will yield complete messages in the queue
 
