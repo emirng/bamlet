@@ -8,16 +8,27 @@ from colorama import Style as cS
 colorama.init()
 
 
+
+
 class Bamlet:
 
     def __init__(self):
         self.running = True
         self.accept_future = None
 
+        # decoraters functions
+        self.handle_client_func = None
+
     # --- decorators
     def on_message(self, *args, **kwargs):
         def inner(func):
             self.on_message_func = func
+            return func
+        return inner
+
+    def handle_client(self, *args, **kwargs):
+        def inner(func):
+            self.handle_client_func = func
             return func
         return inner
     # ---
@@ -52,6 +63,7 @@ class Bamlet:
 
 
     async def _run_server(self):
+        from bamlet import Client
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server.bind((self.host, self.port))
@@ -65,7 +77,13 @@ class Bamlet:
                 self.accept_future = asyncio.ensure_future(loop.sock_accept(server))
                 client, _ = await self.accept_future
                 print("client connect")
-                loop.create_task(self._handle_client(client))
+                if self.handle_client_func:
+                    f = self.handle_client_func
+                    c = Client(client)
+                    loop.create_task(f( c ))
+                    loop.create_task(self.buffer_filler(c))
+                else:
+                    loop.create_task(self._handle_client(client))
             except asyncio.exceptions.CancelledError:
                 print("cancel sock accept")
 
@@ -73,6 +91,12 @@ class Bamlet:
         server.close()
         print("OK!")
 
+
+    async def buffer_filler(self, client):
+        loop = asyncio.get_event_loop()
+        while True:
+            u = await loop.sock_recv(client.inner_client, 255)
+            client.buffer += u 
 
     async def _handle_client(self, client):
 
