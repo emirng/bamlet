@@ -9,6 +9,10 @@ colorama.init()
 
 
 
+async def receiver(client):
+    loop = asyncio.get_event_loop()
+    u = await loop.sock_recv(client.inner_client, 900)
+    return u 
 
 class Bamlet:
 
@@ -80,8 +84,8 @@ class Bamlet:
                 if self.handle_client_func:
                     f = self.handle_client_func
                     c = Client(client)
-                    loop.create_task(f( c ))
-                    loop.create_task(self.buffer_filler(c))
+                    loop.create_task(f( c, lambda : receiver(c) ))
+                    #loop.create_task(self.buffer_filler(c))
                 else:
                     loop.create_task(self._handle_client(client))
             except asyncio.exceptions.CancelledError:
@@ -107,7 +111,8 @@ class Bamlet:
         request = request.split("\n")[0]
         f = self.on_message_func
         response = f(str(request))
-        await loop.sock_sendall(client, response.encode('utf8'))
+        print(response)
+        await loop.sock_sendall(client, response)
         print("client closing down... ", end="")
         client.close()
         print("OK!")

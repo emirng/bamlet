@@ -13,4 +13,9 @@ class Client:
 
     async def send(self,text):
         loop = asyncio.get_event_loop()
-        await loop.sock_sendall(self.inner_client, (text+"\r\n").encode('utf8'))
+        await loop.sock_sendall(self.inner_client, text)
+
+    
+    def close(self):
+        self.inner_client.close()
+
