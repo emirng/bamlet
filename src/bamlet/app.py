@@ -104,6 +104,7 @@ class Bamlet:
 
         loop = asyncio.get_event_loop()
         request = (await loop.sock_recv(client, 255)).decode('utf8').strip()
+        request = request.split("\n")[0]
         f = self.on_message_func
         response = f(str(request))
         await loop.sock_sendall(client, response.encode('utf8'))
