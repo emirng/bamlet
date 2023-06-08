@@ -1,1 +1,4 @@
 pytest
+colorama
+pytest-asyncio
+pytest-timeout
