@@ -30,8 +30,11 @@ After being added Pidgin should auto-connect it. If you see a green circle with 
 
 This IRC-server has a bot on it called bamlet. Try add it as a Buddy. If your IRC-client does not support "Buddies" just try message user bamlet directly.
 
+![image](https://github.com/emirng/bamlet/assets/135670768/d10323ee-8c22-433e-8fc8-0ed7a6469499)
+
 ![image](https://github.com/emirng/bamlet/assets/135670768/51db0c2e-8ca2-4b26-b67b-ef7471e19fd3)
 
 Try message it something. It will give send something back. See screenshot below for spoiler.
 
-![image](https://github.com/emirng/bamlet/assets/135670768/65001aae-0508-48b2-b97b-08e4a42e93ea)
+![image](https://github.com/emirng/bamlet/assets/135670768/aa51e758-ca95-4fb4-baf3-94576ba51efa)
+
