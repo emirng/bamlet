@@ -2,6 +2,7 @@ import socket
 import asyncio
 import signal
 import colorama
+import inspect
 from colorama import Fore as cF
 from colorama import Style as cS
 
@@ -87,8 +88,18 @@ class Bamlet:
                 if self.handle_client_func:
                     f = self.handle_client_func
                     c = Client(client)
-                    loop.create_task(f( c, lambda : receiver(c) ))
-                    #loop.create_task(self.buffer_filler(c))
+                   
+                    args = [] 
+                    for v in inspect.signature(f).parameters:
+                        if v == 'client':
+                            args.append(c)
+                        elif v == 'message_queue':
+                            args.append( lambda : receiver(c)  )
+                        else:
+                            raise ValueError(v)
+                
+                    loop.create_task(f(*args))
+                    loop.create_task(self.buffer_filler(c))
                 else:
                     loop.create_task(self._handle_client(client))
             except asyncio.exceptions.CancelledError:
