@@ -57,17 +57,26 @@ async def handle_client(client):
             print(message)
 
             if message.startswith("USER"):
+                pass           
+            elif message.startswith("NICK"):
+                nick = message.split(' ')[1]
+                client_nick = nick
+
                 if not sent_welcome:
                     send_welcome = False
                     nick = message.split(' ')[1]
                     welcome_kwargs = { 'server': 'localhost', 'nick': nick }
                     client_nick = nick
                     await client.send(welcome_messages.format(**welcome_kwargs).encode())
-            
+ 
+
             elif message.startswith("ISON"):
                 nick = message.split(' ')[1]
-                await client.send(f":{server} 303 {client_nick} :{nick}\r\n".encode())
-
+                if nick != "bamlet":
+                    await client.send(f":{server} 303 {client_nick} :\r\n".encode())
+                else:
+                    await client.send(f":{server} 303 {client_nick} :{nick}\r\n".encode())
+                    
             elif message.startswith('PRIVMSG'):
                 ms = message.split(' ')
                 to = message.split(' ')[1]
@@ -102,7 +111,7 @@ async def handle_client(client):
         await asyncio.sleep(0.1)
 
 def main():
-    app.run(host="localhost", port=9999)
+    app.run(host="localhost", port=6667)
 
 
 if __name__ == '__main__':
