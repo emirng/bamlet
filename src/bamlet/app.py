@@ -23,6 +23,9 @@ class Bamlet:
         # decoraters functions
         self.handle_client_func = None
 
+        from bamlet import current_app
+        current_app.app = self
+
     # --- decorators
     def on_message(self, *args, **kwargs):
         def inner(func):

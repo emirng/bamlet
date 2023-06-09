@@ -66,6 +66,10 @@ Content-Type: {content_type}"""
     await client.send(r)
     client.close()
  
+async def main():
+    print(":::============!")
+    await app.run_async('localhost', 5012)
 
-app.run('localhost', 5012)
+if __name__ == "__main__":
+    main()
 
