@@ -9,7 +9,6 @@ class Handler:
 
     def on_data(self, socket, data):
         if type(socket) != Socket: raise TypeError()
-        print(1)
         socket.close()
 
 server = Net.create_server(Handler())

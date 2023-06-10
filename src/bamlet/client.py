@@ -14,7 +14,8 @@ class Client:
     async def send(self,text):
         socket = self.inner_client.client
         loop = asyncio.get_event_loop()
-        await loop.sock_sendall(socket, text)
+        #await loop.sock_sendall(socket, text)
+        self.inner_client.client.write(text)
 
     async def send_message(self,text):
         loop = asyncio.get_event_loop()
@@ -24,5 +25,5 @@ class Client:
 
     
     def close(self):
-        self.inner_client.client.close()
+        self.inner_client.close()
 
