@@ -1,4 +1,6 @@
+import asyncio
 from bamlet import Bamlet
+
 
 
 app = Bamlet()
@@ -66,10 +68,10 @@ Content-Type: {content_type}"""
     await client.send(r)
     client.close()
  
-async def main():
-    print(":::============!")
-    await app.run_async('localhost', 5012)
+def main():
+    app.run('localhost', 8080)
 
 if __name__ == "__main__":
     main()
+
 

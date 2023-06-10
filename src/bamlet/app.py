@@ -20,6 +20,7 @@ class Bamlet:
     def __init__(self):
         self.running = True
         self.accept_future = None
+        self.future_buffer_fillers = set()
 
         # decoraters functions
         self.handle_client_func = None
@@ -101,7 +102,12 @@ class Bamlet:
                             raise ValueError(v)
                 
                     loop.create_task(f(*args))
-                    loop.create_task(self.buffer_filler(c))
+                    self.future_buffer_fillers.add( asyncio.ensure_future(
+                        #loop.sock_accept(server)
+                        loop.create_task(self.buffer_filler(c))
+                    ))
+
+                    #loop.create_task(self.buffer_filler(c))
                 else:
                     loop.create_task(self._handle_client(client))
             except asyncio.exceptions.CancelledError:
@@ -139,4 +145,7 @@ class Bamlet:
         self.running = False 
         if self.accept_future is not None:
             self.accept_future.cancel()
+        for bf in self.future_buffer_fillers:
+            bf.cancel()
+
     # ---
