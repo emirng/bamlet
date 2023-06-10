@@ -1,7 +1,7 @@
 import asyncio
 import inspect
-from syrup import Syrup
-from syrup import Connection
+from net import Net as Syrup
+from net import Socket as Connection
 
 
 async def receiver(client):
@@ -60,7 +60,7 @@ class Bamlet:
 
     def run(self,host,port):
         server = Syrup.create_server(self)
-        asyncio.run(server.listen('localhost',9000))
+        asyncio.run(server.listen('localhost',9001))
 
 
 """
