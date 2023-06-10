@@ -18,9 +18,12 @@ async def handle_client(client, receiver):
   
     buffer = bytes() 
     header = None
+
+
     while True:
 
         buffer += await receiver()
+        print(buffer)
 
         if b"\r\n\r\n" in buffer:
             header = buffer.split(b"\r\n\r\n")[0]
@@ -39,6 +42,7 @@ Content-Length: 9
 Content-Type: text
 
 Not Found"""
+        print(d)
         await client.send(d)
         client.close()
         return

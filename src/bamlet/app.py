@@ -1,3 +1,69 @@
+import asyncio
+import inspect
+from syrup import Syrup
+from syrup import Connection
+
+
+async def receiver(client):
+    from bamlet import Client
+    assert type(client) == Client
+    return await client.inner_client.stream.read(256)
+
+class Bamlet:
+
+    def on_data(self,conn,data):
+        print(data)
+        conn.stream.feed_data(data)
+
+    def on_connection(self,conn):
+        from bamlet import Client
+        #conn.once('close', onConnClose);  
+        #conn.on('error', onConnError);
+
+        f = self.handle_client_func
+        c = Client(conn)
+                   
+        conn.stream = asyncio.streams.StreamReader()
+        args = [] 
+        for v in inspect.signature(f).parameters:
+            if v == 'client':
+                args.append(c)
+            elif v == 'message_queue':
+                args.append( lambda : receiver(c)  )
+            elif v == 'receiver':
+                args.append( lambda : receiver(c)  )
+            else:
+                raise ValueError(v)
+                
+
+        loop = asyncio.get_event_loop()
+        loop.create_task(f(*args))
+        """
+                    self.future_buffer_fillers.add( asyncio.ensure_future(
+                        #loop.sock_accept(server)
+                        loop.create_task(self.buffer_filler(c))
+                    ))
+
+                    #loop.create_task(self.buffer_filler(c))
+                else:
+                    loop.create_task(self._handle_client(client))
+            except asyncio.exceptions.CancelledError:
+                print("cancel sock accept")"""
+
+ 
+
+    def handle_client(self, *args, **kwargs):
+        def inner(func):
+            self.handle_client_func = func
+            return func
+        return inner
+
+    def run(self,host,port):
+        server = Syrup.create_server(self)
+        asyncio.run(server.listen('localhost',9000))
+
+
+"""
 import socket
 import asyncio
 import signal
@@ -149,3 +215,4 @@ class Bamlet:
             bf.cancel()
 
     # ---
+"""
