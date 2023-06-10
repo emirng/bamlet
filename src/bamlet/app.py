@@ -95,6 +95,8 @@ class Bamlet:
                             args.append(c)
                         elif v == 'message_queue':
                             args.append( lambda : receiver(c)  )
+                        elif v == 'receiver':
+                            args.append( lambda : receiver(c)  )
                         else:
                             raise ValueError(v)
                 
