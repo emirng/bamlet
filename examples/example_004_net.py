@@ -17,6 +17,7 @@ def main():
     server = Net.run( 'localhost', 9001, EchoHandler() )
 
 async def main_async():
-    server = await Net.run_async( 'localhost', 9001, EchoHandler() )
-
-
+    try:
+        server = await Net.run_async( 'localhost', 9001, EchoHandler() )
+    except asyncio.exceptions.CancelledError:
+        pass
