@@ -24,6 +24,7 @@ class Net:
 
     async def listen( self, host, port ):
         self.server = server = await asyncio.start_server( self._connect_callback, host, port )
+        self.handler.server = server
         async with server:
             await server.serve_forever()
 
@@ -35,7 +36,7 @@ class Net:
         self.handler.on_connection( connection ) 
 
         while True:
-            data = await reader.read(100)
+            data = await reader.read(256)
             if len(data) == 0: break
             self.handler.on_data( connection, data )
  
