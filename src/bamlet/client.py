@@ -11,7 +11,11 @@ class Client:
         self.message_queue = MessageQueue(self)
 
 
-    async def send(self,text):
+    def send(self,text):
+
+        self.inner_client.send(text)
+        return
+
         socket = self.inner_client.client
         loop = asyncio.get_event_loop()
         #await loop.sock_sendall(socket, text)

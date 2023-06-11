@@ -59,9 +59,17 @@ class Bamlet:
         return inner
 
     def run(self,host,port):
-        server = Syrup.create_server(self)
-        asyncio.run(server.listen('localhost',9001))
+        Syrup.run(host,port,self)
 
+    async def run_async(self,host,port):
+        await Syrup.run_async(host,port,self)
+
+    def __init__(self):
+        from bamlet import current_app
+        current_app.app = self
+
+    def _shutdown(self):
+        self.server.close()
 
 """
 import socket

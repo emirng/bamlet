@@ -5,8 +5,8 @@ from bamlet.client import Client as Client
 class Proxy:
 
 
-    async def shutdown(self):
-        await self.app._shutdown()
+    def shutdown(self):
+        self.app._shutdown()
 
 current_app = Proxy()
 

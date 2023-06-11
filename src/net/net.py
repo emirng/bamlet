@@ -1,58 +1,42 @@
 import asyncio
 import signal
-import socket
 
-class Socket:
+class Net:
 
-    def __init__(self,client):
-        self.ons = dict()
-        self.client = client
-        self.alive = True
+    def run(host,port,impl):
+        n = Net(impl)
+        asyncio.run(n.listen(host,port))
 
-    def on(self, *args, **kwargs):
-        self.ons[args[0]] = args[1]
-
-    async def send(self, t):
-        await self.client.sendall(t)
-
-    def close(self):
-        self.client.close()
-        self.alive = False
-        #await writer.wait_closed()
+    async def run_async(host,port,impl):
+        n = Net(impl)
+        await n.listen(host,port)
 
 
-class Server:
 
     def __init__(self,impl):
         self.impl = impl
         self.running = True
 
-    def get_shutdown_signal_types(self):
-        return [signal.SIGINT, signal.SIGTERM]
-
     async def handle_echo(self, reader, writer):
+        from net import Socket
 
         connection = Socket(writer)
         self.impl.on_connection(connection)           
 
-        
-
-        while connection.alive:
+        while True:
             data = await reader.read(100)
             if len(data) == 0:
                 break
             self.impl.on_data(connection, data)
-
  
     async def listen(self,host,port):
         server = await asyncio.start_server(
             self.handle_echo, host, port)
 
-        async with server:
-            await server.serve_forever()
+        self.impl.server = server
 
-class Net:
-
-    def create_server(impl):
-        return Server(impl)
-
+        try:
+            async with server:
+                await server.serve_forever()
+        except asyncio.exceptions.CancelledError: # try move this elsewhere. out of this class and into the examples files where it is being used?
+            pass

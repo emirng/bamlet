@@ -43,7 +43,7 @@ Content-Type: text
 
 Not Found"""
         print(d)
-        await client.send(d)
+        client.send(d)
         client.close()
         return
 
@@ -69,11 +69,16 @@ Content-Length: {content_length}
 Content-Type: {content_type}"""
 
     r = header.encode() + b"\n\n" + index
-    await client.send(r)
+    client.send(r)
     client.close()
  
 def main():
     app.run('localhost', 8080)
+
+async def main_async():
+    await app.run_async('localhost', 8080)
+    pass
+
 
 if __name__ == "__main__":
     main()

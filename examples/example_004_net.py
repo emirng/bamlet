@@ -9,9 +9,9 @@ class Handler:
 
     def on_data(self, socket, data):
         if type(socket) != Socket: raise TypeError()
+        socket.send(b"x")
         socket.close()
 
-server = Net.create_server(Handler())
-asyncio.run(server.listen('localhost',9001))
+server = Net.run('localhost',9001,Handler())
 
 

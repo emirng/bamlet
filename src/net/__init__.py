@@ -1,4 +1,4 @@
 from net.net import Net
-from net.net import Socket
+from net._socket import Socket
 
 

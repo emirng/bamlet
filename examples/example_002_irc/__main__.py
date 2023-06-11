@@ -42,7 +42,7 @@ def random_ping_message():
 
 @app.handle_client()
 async def handle_client(client):
-
+    print("...")
     sent_welcome = False
     pending_ping = None
     next_ping = time.time() + TIME_BETWEEN_PINGS
@@ -54,7 +54,7 @@ async def handle_client(client):
         mq = list(client.message_queue)
         for message in mq:
             message = message.strip()
-            print(message)
+            print(",,",message)
 
             if message.startswith("USER"):
                 pass           
