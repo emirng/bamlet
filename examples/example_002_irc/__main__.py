@@ -40,8 +40,8 @@ PING_TIMEOUT = 16
 def random_ping_message():
     return ':'+''.join(random.choice({'x','j','!'}) for _ in range(16))
 
-@app.handle_client()
-async def handle_client(client):
+@app.handle_client(blocking=False)
+async def handle_client(client, message_queue):
     print("...")
     sent_welcome = False
     pending_ping = None
@@ -51,7 +51,7 @@ async def handle_client(client):
 
     while True:
 
-        mq = list(client.message_queue)
+        mq = list(message_queue)
         for message in mq:
             message = message.strip()
             print(",,",message)
@@ -67,15 +67,15 @@ async def handle_client(client):
                     nick = message.split(' ')[1]
                     welcome_kwargs = { 'server': 'localhost', 'nick': nick }
                     client_nick = nick
-                    await client.send(welcome_messages.format(**welcome_kwargs).encode())
+                    client.send(welcome_messages.format(**welcome_kwargs).encode())
  
 
             elif message.startswith("ISON"):
                 nick = message.split(' ')[1]
                 if nick != "bamlet":
-                    await client.send(f":{server} 303 {client_nick} :\r\n".encode())
+                    client.send(f":{server} 303 {client_nick} :\r\n".encode())
                 else:
-                    await client.send(f":{server} 303 {client_nick} :{nick}\r\n".encode())
+                    client.send(f":{server} 303 {client_nick} :{nick}\r\n".encode())
                     
             elif message.startswith('PRIVMSG'):
                 ms = message.split(' ')
@@ -84,11 +84,11 @@ async def handle_client(client):
                 msg_back = msg[::-1]
                 msg_back = ' '.join(ms[2:])[1:][::-1]
                 send = f':{to} PRIVMSG {client_nick} :{msg_back}\r\n'
-                await client.send(send.encode())
+                client.send(send.encode())
 
             elif message.startswith("PING"):
                 ping_message = message.split(' ')[1]
-                await client.send(f"PONG {ping_message}\r\n".encode())
+                client.send(f"PONG {ping_message}\r\n".encode())
 
             elif message.startswith("PONG"):
                 ping_message = message.split(' ')[1]
@@ -101,7 +101,7 @@ async def handle_client(client):
             next_ping = time.time() + TIME_BETWEEN_PINGS
             if pending_ping: raise Exception()
             ping_message = random_ping_message()
-            await client.send(f"PING {ping_message}\r\n".encode())
+            client.send(f"PING {ping_message}\r\n".encode())
             pending_ping = ping_message, time.time()
         
         if pending_ping:

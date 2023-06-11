@@ -12,51 +12,72 @@ async def receiver(client):
 class Bamlet:
 
     def on_data(self,conn,data):
-        print(data)
-        conn.stream.feed_data(data)
+        if self.on_data_buffer_type == 1:
+            conn.stream.feed_data(data)
+        else:
+            conn.buffer += data
 
     def on_connection(self,conn):
         from bamlet import Client
+        from bamlet import MessageQueue
         #conn.once('close', onConnClose);  
         #conn.on('error', onConnError);
 
-        f = self.handle_client_func
-        c = Client(conn)
-                   
+        conn.buffer = bytes() 
         conn.stream = asyncio.streams.StreamReader()
-        args = [] 
-        for v in inspect.signature(f).parameters:
-            if v == 'client':
-                args.append(c)
-            elif v == 'message_queue':
-                args.append( lambda : receiver(c)  )
-            elif v == 'receiver':
-                args.append( lambda : receiver(c)  )
-            else:
-                raise ValueError(v)
+
+        if self.handle_client_func:
+            f = self.handle_client_func
+            c = Client(conn)
+            args = [] 
+            for v in inspect.signature(f).parameters:
+                if v == 'client':
+                    args.append(c)
+                elif v == 'message_queue':
+                    args.append( MessageQueue(conn)  )
+                elif v == 'receiver':
+                    args.append( lambda : receiver(c)  )
+                else:
+                    raise ValueError(v)
                 
 
-        loop = asyncio.get_event_loop()
-        loop.create_task(f(*args))
-        """
-                    self.future_buffer_fillers.add( asyncio.ensure_future(
-                        #loop.sock_accept(server)
-                        loop.create_task(self.buffer_filler(c))
-                    ))
+            loop = asyncio.get_event_loop()
+            loop.create_task(f(*args))
 
-                    #loop.create_task(self.buffer_filler(c))
-                else:
-                    loop.create_task(self._handle_client(client))
-            except asyncio.exceptions.CancelledError:
-                print("cancel sock accept")"""
+        if self.on_message_func:
+            loop = asyncio.get_event_loop()
+            loop.create_task(self.on_message_handler(conn))
 
- 
 
+    async def on_message_handler(self, conn):
+        while True:
+            msg = await conn.stream.readuntil(b'\r\n')
+            r = self.on_message_func(message=msg.decode()[:-2])
+            conn.send(r.encode())
+
+    
     def handle_client(self, *args, **kwargs):
+        
+        self.on_data_buffer_type = 1
+        if 'blocking' in kwargs:
+            if kwargs['blocking'] == False:
+                self.on_data_buffer_type = 2
+
+
         def inner(func):
             self.handle_client_func = func
             return func
         return inner
+
+
+    def on_message(self, *args, **kwargs):
+        self.on_data_buffer_type = 1
+        def inner(func):
+            self.on_message_func = func
+            return func
+        return inner
+
+
 
     def run(self,host,port):
         Syrup.run(host,port,self)
@@ -67,6 +88,8 @@ class Bamlet:
     def __init__(self):
         from bamlet import current_app
         current_app.app = self
+        self.handle_client_func = None
+        self.on_message_func = None
 
     def _shutdown(self):
         self.server.close()

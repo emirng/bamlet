@@ -6,7 +6,9 @@ app = Bamlet()
 @app.on_message(delimiter='\n')
 def on_message(message):
     if message == "ping":
-        return "pong"
-    return ""
+        return "pong\n"
+    if message == "marco":
+        return "polo\n"
+    return "?\n"
 
 app.run(host="localhost", port=5011)

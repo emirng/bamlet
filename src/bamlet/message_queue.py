@@ -15,7 +15,7 @@ class MessageQueue:
         self.queue_string += string 
         if '\r\n' in self.queue_string:
             r = self.queue_string[:self.queue_string.find('\r\n')]
-            self.queue_string = self.queue_string[self.queue_string.find('\r\n')+1:]
+            self.queue_string = self.queue_string[self.queue_string.find('\r\n')+2:]
             return r
 
         raise StopIteration
@@ -25,3 +25,5 @@ class MessageQueue:
         b = self.client.buffer
         self.client.buffer = bytes()
         return b.decode()
+
+
