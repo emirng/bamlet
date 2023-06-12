@@ -52,7 +52,9 @@ class Bamlet:
                 if parameter == 'client':
                     args.append( Client( socket ))
                 elif parameter == 'receiver':
-                    args.append( Receiver(stream)  )
+                    args.append( Receiver( stream )  )
+                elif parameter == 'message_queue':
+                    args.append( MessageQueue( stream ) )
                 else:
                     raise ValueError( f'@handle_client got unknown parameter: {parameter}' )
 
