@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 from net import Net
 from net import Socket
 
@@ -8,6 +9,7 @@ class Bamlet:
 
     def __init__( self ):
         self.on_message_func = None
+        self.handle_client_func = None
         Bamlet.app = self
 
 
@@ -22,16 +24,19 @@ class Bamlet:
     def shutdown( self ):
         for handler in self.handlers:
             handler.cancel()
-
         self.server.close()
 
 
     def on_connection( self, socket ):
+        from bamlet import Client
+        from bamlet import Receiver
         if type(socket) != Socket: raise TypeError()                
 
-        socket.__stream = asyncio.streams.StreamReader()
+        loop = asyncio.get_event_loop()
+        socket.__stream = stream = asyncio.streams.StreamReader()
+
+        # if @on_message
         if self.on_message_func:
-            loop = asyncio.get_event_loop()
 
             # TODO: this handlers set can get really big if we never discard any of the
             #       "futures" it holds. we should discard on disconnect.
@@ -39,14 +44,38 @@ class Bamlet:
                 loop.create_task( self._on_message_handler( socket ) )
             ))
 
+        # if @handle_client
+        if self.handle_client_func:
+            f = self.handle_client_func
+            args = [] 
+            for parameter in inspect.signature(f).parameters:
+                if parameter == 'client':
+                    args.append( Client( socket ))
+                elif parameter == 'receiver':
+                    args.append( Receiver(stream)  )
+                else:
+                    raise ValueError( f'@handle_client got unknown parameter: {parameter}' )
+
+            self.handlers.add( asyncio.ensure_future(
+                loop.create_task( f(*args) )
+            ))
+
 
     def on_data( self, socket, data ):
         socket.__stream.feed_data( data )
+
 
     # TODO: add delimiter argument
     def on_message( self, *args, **kwargs ):
         def inner( func ):
             self.on_message_func = func
+            return func
+        return inner
+
+
+    def handle_client( self, *args, **kwargs ):
+        def inner( func ):
+            self.handle_client_func = func
             return func
         return inner
 
