@@ -1,6 +1,5 @@
 import asyncio
 import pytest
-from net import Net
 from bamlet import Bamlet
 
 response = None
@@ -16,7 +15,6 @@ async def echo_client():
     response = response_in_bytes.decode()
     writer.close()
     await writer.wait_closed()
-    Bamlet.app.shutdown()
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(5)
@@ -26,8 +24,9 @@ async def test():
     task_server = asyncio.create_task( main_async() )
     task_client = asyncio.create_task( echo_client() )
 
-    await task_server
     await task_client
+    Bamlet.app.shutdown()
+    await task_server
 
     assert response == 'pong'
 
