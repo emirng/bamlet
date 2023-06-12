@@ -5,7 +5,7 @@ import pytest
 def test():
     from bamlet import MessageQueue
 
-    stream = b"hi\nmr\nemirgn\n"
+    stream = bytearray(b"hi\nmr\nemirgn\n")
     mq = MessageQueue(stream) 
 
     for m in mq.get():
@@ -15,7 +15,7 @@ def test():
 
     assert mq.stream == b""
 
-    mq.stream += b"karl\n"
+    mq.stream += bytearray(b"karl\n")
 
     for m in mq.get():
         if m == 'karl': break

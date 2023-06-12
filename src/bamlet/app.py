@@ -10,6 +10,7 @@ class Bamlet:
     def __init__( self ):
         self.on_message_func = None
         self.handle_client_func = None
+        self.stream_async = True
         Bamlet.app = self
 
 
@@ -30,10 +31,15 @@ class Bamlet:
     def on_connection( self, socket ):
         from bamlet import Client
         from bamlet import Receiver
+        from bamlet import MessageQueue
         if type(socket) != Socket: raise TypeError()                
 
         loop = asyncio.get_event_loop()
-        socket.__stream = stream = asyncio.streams.StreamReader()
+
+        if self.stream_async:
+            socket.__stream = stream = asyncio.streams.StreamReader()
+        else:
+            socket.__stream = stream = bytearray()
 
         # if @on_message
         if self.on_message_func:
@@ -54,7 +60,7 @@ class Bamlet:
                 elif parameter == 'receiver':
                     args.append( Receiver( stream )  )
                 elif parameter == 'message_queue':
-                    args.append( MessageQueue( stream ) )
+                    args.append( MessageQueue( stream, separator = b'\r\n' ) )
                 else:
                     raise ValueError( f'@handle_client got unknown parameter: {parameter}' )
 
@@ -64,8 +70,10 @@ class Bamlet:
 
 
     def on_data( self, socket, data ):
-        socket.__stream.feed_data( data )
-
+        if self.stream_async:
+            socket.__stream.feed_data( data )
+        else:
+            socket.__stream += data
 
     # TODO: add delimiter argument
     def on_message( self, *args, **kwargs ):
@@ -76,6 +84,10 @@ class Bamlet:
 
 
     def handle_client( self, *args, **kwargs ):
+
+        if kwargs.get('stream_async') is False:
+            self.stream_async = False
+
         def inner( func ):
             self.handle_client_func = func
             return func

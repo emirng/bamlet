@@ -7,10 +7,11 @@ class MessageQueue():
 
 
     def get(self):
+        sep = self.separator
         while True:
-            if b'\n' in self.stream:
-                r = self.stream[:self.stream.find(b'\n')]
-                self.stream = self.stream[self.stream.find(b'\n')+1:]
+            if sep in self.stream:
+                r = self.stream[:self.stream.find(sep)]
+                del self.stream[:self.stream.find(sep)+len(sep)]
                 yield r.decode()
             else:
                 break
