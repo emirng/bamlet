@@ -16,5 +16,6 @@ Expected output
 ## How to render the web page
 Use a web client and  goto http://localhost:8080
 
-### Connect
 ![image](https://github.com/emirng/bamlet/assets/135670768/cca6a928-cee9-4a0b-9cff-9d2614e7b2b0)
+
+Test click links to see different resources and different content-types. You can also test trigger a 404 by enter an invalid resource directly to the URL. It also checks for 405, try to trigger that as well.
