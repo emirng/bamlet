@@ -48,7 +48,7 @@ python -m examples.example_001_on_message_ping_pong
 | Decorators | Arguments | Parameters | Description |
 |----------|-------------|----|--|
 | `@on_message` |  | client, receiver, message_queue |  Handler for each single message from client. |
-| `@handle_client` | stream_async=True | Handler for a the entire connection.  |
+| `@handle_client` | stream_async=True | | Handler for a the entire connection.  |
 
 ### Client
 
