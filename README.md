@@ -26,3 +26,41 @@ To run an example execute this command in to project's top folder
 ```
 python -m examples.example_001_on_message_ping_pong
 ```
+
+## API
+
+| Class | Description |
+|----------|-------------|
+| `Bamlet` | The server. |
+| `Client` | A client that is connected (or disconnected) to the server. |
+| `MessageQueue` | A helper that helps retrive "messages" from a client. |
+| `Receiver` | A helper that helps read buffer from a client. |
+
+### Bamlet
+
+| Method | Arguments | Description |
+|----------|-------------|---|
+| `run` | host, port | Will start the server.  |
+| `run_async` | host, port | Will start the server asynchronously.  |
+| `shutdown` | | Will shutdown server.  |
+
+
+| Decorators | Arguments | Parameters | Description |
+|----------|-------------|----|--|
+| `@on_message` |  | client, receiver, message_queue |  Handler for each single message from client. |
+| `@handle_client` | stream_async=True | Handler for a the entire connection.  |
+
+### Client
+
+| Method | Arguments | Description |
+|----------|-------------|---|
+| `send` | text | Sends buffer to client.  |
+| `close` | text | Close client connection.  |
+
+### MessageQueue
+
+| Method | Arguments | Description |
+|----------|-------------|---|
+| `get` | | Generator that yields messages in queue. Breaks when no more complete messages in queue.  |
+| `get_async` | | Generator that yields messages in queue. This is asynchronous and never breaks.  |
+
