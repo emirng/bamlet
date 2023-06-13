@@ -9,4 +9,4 @@ jobs:
           - name: install requirements
             run: pip install -r requirements.txt
           - name: RUN TEST
-            run: python -m pytest tests/*.py
+            run: python -m pytest -vv tests/*.py
