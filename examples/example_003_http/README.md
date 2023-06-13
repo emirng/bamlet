@@ -1,4 +1,4 @@
-# Example 002 HTTP
+# Example 003 HTTP
 
 This show how one could use bamlet to write an HTTP-server.
 
