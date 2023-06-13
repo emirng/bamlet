@@ -1,7 +1,12 @@
 import asyncio
+import colorama
 import inspect
 from net import Net
 from net import Socket
+from colorama import Fore as cF
+from colorama import Style as cS
+
+colorama.init()
 
 class Bamlet:
 
@@ -15,10 +20,14 @@ class Bamlet:
 
 
     def run( self, host, port ):
+        print(f" * Serving {cF.BLUE}bamlet{cS.RESET_ALL} app")
+        print(f" * Running on {cF.CYAN}{host}:{cF.MAGENTA}{port}{cS.RESET_ALL}")
         Net.run( host, port, self )
 
 
     async def run_async( self, host, port ):
+        print(f" * Serving {cF.BLUE}bamlet{cS.RESET_ALL} app")
+        print(f" * Running on {cF.CYAN}{host}:{cF.MAGENTA}{port}{cS.RESET_ALL}")
         await Net.run_async( host, port, self )
 
 
